@@ -7,6 +7,7 @@ public class PackageException extends Exception{
     public static final int MAX_PACKAGE_WEIGHT_EXCEEDED=1003;
     public static final int MAX_PACKAGE_COST_EXCEEDED = 1004;
     public static final int INVALID_INDEX_VALUE = 1005;
+    public static final int UNKNOWN_ERROR=1006;
 
     public final int code;
 
