@@ -100,7 +100,7 @@ public class PackItems {
                         .mapToObj(index -> Integer.toString(index))
                         .collect(Collectors.joining(","));
 
-        return result ;
+        return result.isEmpty() ? "-" : result ;
     }
 
 
