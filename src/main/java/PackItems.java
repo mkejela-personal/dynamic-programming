@@ -97,7 +97,7 @@ public class PackItems {
                 finalI.stream()
                         .mapToInt(i -> i)
                         .sorted()
-                        .mapToObj(index -> Integer.toString(index))
+                        .mapToObj(Integer::toString)
                         .collect(Collectors.joining(","));
 
         return result.isEmpty() ? "-" : result ;
