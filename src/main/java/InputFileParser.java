@@ -26,6 +26,7 @@ public class InputFileParser {
                 throw new PackageException("The file is empty, please correct add your items to the file.", PackageException.EMPTY_FILE);
             }
 
+            //split each line into weight:item pair
             while (input.hasNext()) {
                 splitedLine = input.nextLine().split(":");
                 if (!input.nextLine().isEmpty()) {
@@ -70,48 +71,53 @@ public class InputFileParser {
         List<PackageItem> packageItems = new ArrayList<>();
         Pair<Integer, List<PackageItem>> packages = null;
 
-        for (Pair<Double, String> pairItem : Objects.requireNonNull(parsedLines)) {
-            maxLineWeight=pairItem.left;
 
-            String item = pairItem.right;
+        //this will iterater through the items to get maxWeight:item pairs
+        for (Pair<Double, String> line : parsedLines) {
+            for (Pair<Double, String> pairItem : Objects.requireNonNull(parsedLines)) {
+                maxLineWeight = pairItem.left;
 
-            Pattern pattern = Pattern.compile(Constants.PACKAGE_REGEX);
-            Matcher matcher = pattern.matcher(item);
-            int lastEnd =0;
+                String item = pairItem.right;
 
-            while (matcher.find()) {
-                PackageItem packageItem;
+                Pattern pattern = Pattern.compile(Constants.PACKAGE_REGEX);
+                Matcher matcher = pattern.matcher(item);
+                int lastEnd = 0;
 
-            if(matcher.start()!= lastEnd+1 || item.charAt(lastEnd)!=' '){
-                throw new PackageException(String.format("The package items should be in (%s) format", Constants.PACKAGE_REGEX), PackageException.INVALID_ITEM_FORMAT);
-            }
+                while (matcher.find()) {
+                    PackageItem packageItem;
 
-
-                try {
-                    Integer index = Integer.valueOf(matcher.group(Constants.INDEX));
-                    Double weight = Double.valueOf(matcher.group(Constants.WEIGHT));
-                    Double cost = Double.valueOf(matcher.group(Constants.COST));
-
-                    validateItemParameters(cost, weight, index, maxLineWeight);
-
-                    packageItem = new PackageItem(index, weight, cost);
-                    packageItems.add(packageItem);
-                    parsedLine=new ParsedLine(packageItems);
-                    parsedLine.setLineMaxWeight(maxLineWeight);
-
-                   packages =new Pair<>((int)maxLineWeight,packageItems);
+                    if (matcher.start() != lastEnd + 1 || item.charAt(lastEnd) != ' ') {
+                        throw new PackageException(String.format("The package items should be in (%s) format", Constants.PACKAGE_REGEX), PackageException.INVALID_ITEM_FORMAT);
+                    }
 
 
-                } catch (PackageException numberFormatException) {
+                    try {
+                        //get the pairs based on the Constants and validate the inputs
+                        Integer index = Integer.valueOf(matcher.group(Constants.INDEX));
+                        Double weight = Double.valueOf(matcher.group(Constants.WEIGHT));
+                        Double cost = Double.valueOf(matcher.group(Constants.COST));
 
-                    throw new PackageException("Invalid number", PackageException.INVALID_ITEM_FORMAT);
+                        validateItemParameters(cost, weight, index, maxLineWeight);
+
+                        packageItem = new PackageItem(index, weight, cost);
+                        packageItems.add(packageItem);
+                        parsedLine = new ParsedLine(packageItems);
+                        parsedLine.setLineMaxWeight(maxLineWeight);
+
+                        packages = new Pair<>((int) maxLineWeight, packageItems);
+
+
+                    } catch (PackageException numberFormatException) {
+
+                        throw new PackageException("Invalid number", PackageException.INVALID_ITEM_FORMAT);
+                    }
+
+                    lastEnd = matcher.end();
                 }
 
-                lastEnd = matcher.end();
+                result = PackItems.findOptimumPackage(packages).toString();
+
             }
-
-           result= PackItems.findOptimumPackage(packages);
-
         }
 
         return result;
