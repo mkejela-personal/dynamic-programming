@@ -73,7 +73,6 @@ public class InputFileParser {
 
 
         //this will iterater through the items to get maxWeight:item pairs
-        for (Pair<Double, String> line : parsedLines) {
             for (Pair<Double, String> pairItem : Objects.requireNonNull(parsedLines)) {
                 maxLineWeight = pairItem.left;
 
@@ -118,7 +117,6 @@ public class InputFileParser {
                 result = PackItems.findOptimumPackage(packages).toString();
 
             }
-        }
 
         return result;
 
